@@ -1,0 +1,10 @@
+{
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "resume": "https://example.com/resume.pdf",
+    "location": "Remote",
+    "linkedin": "https://linkedin.com/in/janedoe",
+    "codeLink": "https://github.com/janedoe",
+    "yearsPython": 0,
+    "notes": ""
+}
