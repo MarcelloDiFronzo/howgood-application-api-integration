@@ -1,4 +1,7 @@
+pydantic
 python-dotenv
 requests
 mypy
+pytest
 ruff
+pytest
