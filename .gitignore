@@ -231,6 +231,7 @@ celerybeat.pid
 
 # Environments
 utils/.template_env
+.env
 .venv
 env/
 venv/
