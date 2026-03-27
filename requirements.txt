@@ -1,7 +1,8 @@
+loguru
 pydantic
 python-dotenv
 requests
 mypy
 pytest
 ruff
-pytest
+types-requests
