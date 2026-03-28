@@ -6,3 +6,4 @@ mypy
 pytest
 ruff
 types-requests
+pre-commit
