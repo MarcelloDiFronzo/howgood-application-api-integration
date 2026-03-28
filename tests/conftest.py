@@ -40,18 +40,31 @@ def wait_for_mock_server() -> None:
 @pytest.fixture
 def dev_secret():
     """Return the dev secret or skip the test when it is unavailable."""
-    secret = os.getenv("DEV_HOWGOOD_SECRET")
-    if not secret:
-        pytest.skip("DEV_HOWGOOD_SECRET is not set")
+    secret = os.getenv("DEV_HOWGOOD_SECRET") or "dev-secret"
+
     return secret
 
 
 @pytest.fixture
 def dev_endpoint():
     """Return the dev endpoint or skip the test when it is unavailable."""
-    endpoint = os.getenv("DEV_HOWGOOD_ENDPOINT")
-
-    if not endpoint:
-        pytest.skip("DEV_HOWGOOD_ENDPOINT are not set")
+    endpoint = os.getenv("DEV_HOWGOOD_ENDPOINT") or "http://localhost:8000/apply"
 
     return endpoint
+
+
+@pytest.fixture
+def sample_payload() -> dict[str, object]:
+    """Return a valid sample application payload."""
+    return {
+        "name": "Jane Doe",
+        "email": "jane@example.com",
+        "resume": "https://example.com/resume.pdf",
+        "location": "Remote",
+        "linkedin": "https://linkedin.com/in/janedoe",
+        "codeLink": "https://github.com/janedoe",
+        "yearsPython": 7,
+        "yearsDjango": 3,
+        "repos": "https://github.com/janedoe?tab=repositories",
+        "notes": "Great candidate",
+    }

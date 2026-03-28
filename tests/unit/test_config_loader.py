@@ -9,38 +9,26 @@ import howgood_apply.config_loader as config_loader
 
 
 def test_load_payload_reads_and_validates_json(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, sample_payload
 ) -> None:
     """Verify that a valid payload file is loaded and normalized."""
     payload_file = tmp_path / "payload.json"
-    payload_data = {
-        "name": "Jane Doe",
-        "email": "jane@example.com",
-        "resume": "https://example.com/resume.pdf",
-        "location": "Remote",
-        "linkedin": "https://linkedin.com/in/janedoe",
-        "codeLink": "https://github.com/janedoe",
-        "yearsPython": 7,
-        "yearsDjango": 3,
-        "repos": "https://github.com/janedoe?tab=repositories",
-        "notes": "Great candidate",
-    }
-    payload_file.write_text(json.dumps(payload_data), encoding="utf-8")
+    payload_file.write_text(json.dumps(sample_payload), encoding="utf-8")
 
     monkeypatch.setattr(config_loader, "PROJECT_ROOT", tmp_path)
 
     result = config_loader.load_payload("payload.json")
 
-    assert result["name"] == payload_data["name"]
-    assert result["email"] == payload_data["email"]
-    assert str(result["resume"]) == payload_data["resume"]
-    assert result["location"] == payload_data["location"]
-    assert str(result["linkedin"]) == payload_data["linkedin"]
-    assert str(result["codeLink"]) == payload_data["codeLink"]
-    assert result["yearsPython"] == payload_data["yearsPython"]
-    assert result["yearsDjango"] == payload_data["yearsDjango"]
-    assert result["repos"] == payload_data["repos"]
-    assert result["notes"] == payload_data["notes"]
+    assert result["name"] == sample_payload["name"]
+    assert result["email"] == sample_payload["email"]
+    assert str(result["resume"]) == sample_payload["resume"]
+    assert result["location"] == sample_payload["location"]
+    assert str(result["linkedin"]) == sample_payload["linkedin"]
+    assert str(result["codeLink"]) == sample_payload["codeLink"]
+    assert result["yearsPython"] == sample_payload["yearsPython"]
+    assert result["yearsDjango"] == sample_payload["yearsDjango"]
+    assert result["repos"] == sample_payload["repos"]
+    assert result["notes"] == sample_payload["notes"]
 
 
 def test_load_payload_raises_for_missing_file(
@@ -53,24 +41,16 @@ def test_load_payload_raises_for_missing_file(
         config_loader.load_payload("missing.json")
 
 
-def test_load_payload_accepts_absolute_path(tmp_path: Path) -> None:
+def test_load_payload_accepts_absolute_path(tmp_path: Path, sample_payload) -> None:
     """Verify that absolute paths are handled without PROJECT_ROOT resolution."""
     payload_file = tmp_path / "payload.json"
-    payload_data = {
-        "name": "Jane Doe",
-        "email": "jane@example.com",
-        "resume": "https://example.com/resume.pdf",
-        "location": "Remote",
-        "linkedin": "https://linkedin.com/in/janedoe",
-        "codeLink": "https://github.com/janedoe",
-    }
-    payload_file.write_text(json.dumps(payload_data), encoding="utf-8")
+    payload_file.write_text(json.dumps(sample_payload), encoding="utf-8")
 
     result = config_loader.load_payload(str(payload_file))
 
-    assert result["name"] == payload_data["name"]
-    assert result["email"] == payload_data["email"]
-    assert str(result["resume"]) == payload_data["resume"]
-    assert result["location"] == payload_data["location"]
-    assert str(result["linkedin"]) == payload_data["linkedin"]
-    assert str(result["codeLink"]) == payload_data["codeLink"]
+    assert result["name"] == sample_payload["name"]
+    assert result["email"] == sample_payload["email"]
+    assert str(result["resume"]) == sample_payload["resume"]
+    assert result["location"] == sample_payload["location"]
+    assert str(result["linkedin"]) == sample_payload["linkedin"]
+    assert str(result["codeLink"]) == sample_payload["codeLink"]

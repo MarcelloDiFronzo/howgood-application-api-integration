@@ -9,17 +9,10 @@ import requests
 import howgood_apply.client as client
 
 
-def test_submit_success(monkeypatch: pytest.MonkeyPatch, dev_secret, dev_endpoint) -> None:
+def test_submit_success(
+    monkeypatch: pytest.MonkeyPatch, dev_secret, dev_endpoint, sample_payload
+) -> None:
     """Verify a successful request returns the decoded JSON response."""
-    payload = {
-        "name": "Jane Doe",
-        "email": "jane@example.com",
-        "resume": "https://example.com/resume.pdf",
-        "location": "Remote",
-        "linkedin": "https://linkedin.com/in/janedoe",
-        "codeLink": "https://github.com/janedoe",
-    }
-
     response: MagicMock = MagicMock()
     response.status_code = 200
     response.json.return_value = {"ok": True}
@@ -42,14 +35,14 @@ def test_submit_success(monkeypatch: pytest.MonkeyPatch, dev_secret, dev_endpoin
     monkeypatch.setattr(client.logger, "info", info_mock)
     monkeypatch.setattr(client.logger, "error", error_mock)
 
-    result = client.submit(payload, dev_endpoint, dev_secret, retries=1)
+    result = client.submit(sample_payload, dev_endpoint, dev_secret, retries=1)
 
     assert result == {"ok": True}
-    validate_mock.assert_called_once_with(payload)
-    sign_mock.assert_called_once_with(payload, dev_secret)
+    validate_mock.assert_called_once_with(sample_payload)
+    sign_mock.assert_called_once_with(sample_payload, dev_secret)
     post_mock.assert_called_once_with(
         dev_endpoint,
-        data=json.dumps(payload, separators=(",", ":"), default=str),
+        data=json.dumps(sample_payload, separators=(",", ":"), default=str),
         headers={
             "Content-Type": "application/json",
             "X-HMAC-Signature": "signature-123",
@@ -60,18 +53,9 @@ def test_submit_success(monkeypatch: pytest.MonkeyPatch, dev_secret, dev_endpoin
 
 
 def test_submit_retries_then_succeeds(
-    monkeypatch: pytest.MonkeyPatch, dev_secret, dev_endpoint
+    monkeypatch: pytest.MonkeyPatch, dev_secret, dev_endpoint, sample_payload
 ) -> None:
     """Verify that transient failures are retried and then succeed."""
-    payload = {
-        "name": "Jane Doe",
-        "email": "jane@example.com",
-        "resume": "https://example.com/resume.pdf",
-        "location": "Remote",
-        "linkedin": "https://linkedin.com/in/janedoe",
-        "codeLink": "https://github.com/janedoe",
-    }
-
     response: MagicMock = MagicMock()
     response.status_code = 200
     response.json.return_value = {"ok": True}
@@ -95,7 +79,7 @@ def test_submit_retries_then_succeeds(
     monkeypatch.setattr(client.logger, "info", info_mock)
     monkeypatch.setattr(client.logger, "error", error_mock)
 
-    result = client.submit(payload, dev_endpoint, dev_secret, retries=2)
+    result = client.submit(sample_payload, dev_endpoint, dev_secret, retries=2)
 
     assert result == {"ok": True}
     assert post_mock.call_count == 2
@@ -104,18 +88,9 @@ def test_submit_retries_then_succeeds(
 
 
 def test_submit_raises_after_max_retries(
-    monkeypatch: pytest.MonkeyPatch, dev_secret, dev_endpoint
+    monkeypatch: pytest.MonkeyPatch, dev_secret, dev_endpoint, sample_payload
 ) -> None:
     """Verify that the client raises after exhausting retries."""
-    payload = {
-        "name": "Jane Doe",
-        "email": "jane@example.com",
-        "resume": "https://example.com/resume.pdf",
-        "location": "Remote",
-        "linkedin": "https://linkedin.com/in/janedoe",
-        "codeLink": "https://github.com/janedoe",
-    }
-
     exc = requests.exceptions.RequestException("network down")
     post_mock: MagicMock = MagicMock(side_effect=exc)
     time_mock: MagicMock = MagicMock()
@@ -135,7 +110,7 @@ def test_submit_raises_after_max_retries(
     monkeypatch.setattr(client.logger, "error", error_mock)
 
     with pytest.raises(Exception, match="Max retries reached"):
-        client.submit(payload, dev_endpoint, dev_secret, retries=2)
+        client.submit(sample_payload, dev_endpoint, dev_secret, retries=2)
 
     assert post_mock.call_count == 2
     assert time_mock.sleep.call_count == 1
