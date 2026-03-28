@@ -8,6 +8,7 @@ from pydantic import BaseModel, HttpUrl
 
 class Payload(BaseModel):
     """Schema for the application payload."""
+
     name: str
     email: str
     resume: HttpUrl

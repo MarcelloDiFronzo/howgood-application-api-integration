@@ -1,0 +1,10 @@
+# Define the environment mode
+ENV=dev
+
+# Dev variables
+DEV_HOWGOOD_SECRET=mock_secret@1!
+DEV_HOWGOOD_ENDPOINT=http://localhost:8080/apply
+
+# Prod variables
+PROD_HOWGOOD_SECRET=[Howgood_secret]
+PROD_HOWGOOD_ENDPOINT=https://howgood-apply-api.howgood.workers.dev/apply
