@@ -38,4 +38,4 @@ def load_payload(path: str = "config/payload.json") -> dict:
         raw = json.load(f)
 
     payload = Payload(**raw)
-    return payload.model_dump()
+    return payload.model_dump(mode="json", exclude_none=True)

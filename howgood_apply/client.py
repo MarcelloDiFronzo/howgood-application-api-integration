@@ -44,6 +44,21 @@ def submit(payload: dict, endpoint: str, secret: str, retries: int = 3):
             logger.info(f"Request successful ({response.status_code})", latency=latency)
             return response.json()
 
+        except requests.exceptions.HTTPError as e:
+            status_code = getattr(e.response, "status_code", None)
+
+            logger.error("Request failed", error=str(e))
+
+            if status_code and 400 <= status_code < 500:
+                raise Exception(f"Request rejected by server: {e.response.text}")
+
+            if attempt == retries - 1:
+                raise Exception("Max retries reached")
+
+            sleep_time = 2**attempt
+            logger.info("Retrying...", sleep=sleep_time)
+            time.sleep(sleep_time)
+
         except requests.exceptions.RequestException as e:
             logger.error("Request failed", error=str(e))
 
